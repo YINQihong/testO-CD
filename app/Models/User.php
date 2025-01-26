@@ -42,4 +42,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Un user peut créer plusieurs enregistrements de personnes
+     */
+    public function people()
+    {
+        return $this->hasMany(Person::class, 'created_by');
+    }
+    
 }

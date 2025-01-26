@@ -9,6 +9,14 @@ use App\Models\User;
 class PersonController extends Controller
 {
     /**
+     * Assurer que seules les utilisateurs authentifiées peuvent créer des personnes.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth'); 
+    }
+
+    /**
      * Afficher la liste des personnes avec le nom du créateur.
      */
     public function index()
@@ -46,6 +54,13 @@ class PersonController extends Controller
             'last_name' => 'required|string|max:255',
             'created_by' => 'required|exists:users,id',
         ]);
+
+        $formattedFirstName = ucfirst(strtolower($request->first_name));  // première lettre en majuscule, toutes les autres lettres en minuscules.
+        $formattedLastName = strtoupper($request->last_name);  // toutes lettres en majuscules.
+        $formattedMiddleNames = $request->middle_names 
+        ? implode(', ', array_map(fn($name) => ucfirst(strtolower($name)), explode(',', $request->middle_names)))
+        : null;  // pour chaque prénom séparé par une virgule, alors première lettre en majuscule et toutes les autres lettres en minuscules - si non renseigné alors NULL
+        $formattedBirthName = strtoupper($request->birth_name) ?? $formattedLastName; 
 
         // Création de la personne
         Person::create([

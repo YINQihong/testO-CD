@@ -1,66 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📖 Base de Données Généalogique
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ce projet définit une base de données pour un site de généalogie où les utilisateurs peuvent ajouter des membres de leur famille, établir des relations de parenté et proposer des modifications qui doivent être validées par la communauté.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 1. Schéma de la base de données
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Voici le schéma de la base de données utilisé pour ce projet :
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+![Schéma de la base de données](resources/images/conceptionBD_Partie4.png)
 
-## Learning Laravel
+## **Description de la structure de la base de données**
+La base de données est conçue pour permettre l'ajout, la gestion et la validation des informations sur les personnes et leurs relations familiales.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **Tables et Fonctionnalités**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### `users` - Gestion des utilisateurs  
+Chaque utilisateur enregistré possède un compte et peut être lié à une personne dans la base généalogique.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Colonne      | Type           | Description |
+|-------------|---------------|-------------|
+| `id`        | BIGINT (PK)    | Identifiant unique de l'utilisateur |
+| `username`  | VARCHAR(255)   | Nom d'utilisateur (unique) |
+| `email`     | VARCHAR(255)   | Adresse e-mail (unique) |
+| `password`  | VARCHAR(255)   | Mot de passe de l'utilisateur |
+| `person_id` | BIGINT (FK)    | Référence vers la table `people` |
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### `people` - Gestion des personnes  
+Table contenant les informations des individus enregistrés dans l'arbre généalogique.
 
-### Premium Partners
+| Colonne       | Type           | Description |
+|--------------|---------------|-------------|
+| `id`         | BIGINT (PK)    | Identifiant unique de la personne |
+| `first_name` | VARCHAR(255)   | Prénom |
+| `last_name`  | VARCHAR(255)   | Nom de famille |
+| `birth_date` | DATE           | Date de naissance |
+| `created_by` | BIGINT (FK)    | Créateur de la fiche |
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+---
 
-## Contributing
+### `relationships` - Relations familiales  
+Définit les relations entre les membres de la famille (parent-enfant, frères et sœurs, etc.).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Colonne       | Type           | Description |
+|--------------|---------------|-------------|
+| `id`         | BIGINT (PK)    | Identifiant unique de la relation |
+| `parent_id`  | BIGINT (FK)    | Référence vers la personne parent |
+| `child_id`   | BIGINT (FK)    | Référence vers la personne enfant |
+| `relation_type` | ENUM(father, mother, child, sibling) | Type de relation |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### `invitations` - Invitations des membres  
+Permet aux utilisateurs d'inviter des membres de leur famille à rejoindre le site.
 
-## Security Vulnerabilities
+| Colonne       | Type           | Description |
+|--------------|---------------|-------------|
+| `id`         | BIGINT (PK)    | Identifiant unique de l'invitation |
+| `inviter_id` | BIGINT (FK)    | Identifiant de l'utilisateur invitant |
+| `invitee_email` | VARCHAR(255) | E-mail de l'invité |
+| `person_id`  | BIGINT (FK)    | Référence vers la fiche `people` créée pour l'invité |
+| `status`     | ENUM(pending, accepted, declined) | Statut de l'invitation |
+| `created_at` | TIMESTAMP      | Date de création |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### `modifications` - Proposition de modifications  
+Gère les propositions de modification des informations ou des relations, nécessitant une validation communautaire.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Colonne       | Type           | Description |
+|--------------|---------------|-------------|
+| `id`         | BIGINT (PK)    | Identifiant unique de la modification |
+| `proposer_id` | BIGINT (FK)   | Identifiant de l'utilisateur proposant la modification |
+| `target_person_id` | BIGINT (FK) | Personne concernée par la modification |
+| `proposed_changes` | JSON       | Modifications proposées (ex : ajout d'une relation) |
+| `status`     | ENUM(pending, accepted, rejected) | État de la modification |
+| `created_at` | TIMESTAMP      | Date de soumission |
+
+---
+
+### `modification_votes` - Votes pour valider une modification  
+Stocke les votes des utilisateurs pour accepter ou refuser une modification.
+
+| Colonne       | Type           | Description |
+|--------------|---------------|-------------|
+| `id`         | BIGINT (PK)    | Identifiant unique du vote |
+| `modification_id` | BIGINT (FK) | Référence vers la modification votée |
+| `voter_id`   | BIGINT (FK)    | Identifiant de l'utilisateur votant |
+| `vote`       | ENUM(accept, reject) | Vote (acceptation ou rejet) |
+| `created_at` | TIMESTAMP      | Date du vote |
+
+---
+
+## **Évolution des Données**
+1. **Ajout d'un membre de la famille**
+   - Un utilisateur crée une fiche `people` et ajoute une relation `relationships`.
+   - _Exemple : `jean01` ajoute sa fille `Marie PERRET`._
+
+2. **Invitations**
+   - Un utilisateur invite un membre via `invitations`, qui accepte et obtient une fiche `people`.
+   - _Exemple : `jean01` invite `marie02`, qui devient `Marie PERRET`._
+
+3. **Proposition de modifications**
+   - Un utilisateur propose une modification via `modifications`.
+   - _Exemple : `rose03` propose un lien père-fille entre `Jean PERRET` et `Rose PERRET`._
+
+4. **Validation communautaire**
+   - Chaque modification doit obtenir au moins 3 validations (`modification_votes`) pour être acceptée.
+   - _Exemple : `jean01`, `marie02` et `marc10` votent pour accepter une relation._
+
+5. **Rejet d'une modification**
+   - Si une proposition obtient 3 refus, elle est définitivement rejetée.
+   - _Exemple : `rose03` propose un lien refusé par `jean01`, `marie02` et `marc10`._
+
+## **Processus de Validation des Modifications**
+
+- Un utilisateur propose une modification (ajout ou mise à jour d’une relation).
+
+- La proposition est enregistrée dans modifications avec un statut pending.
+
+- Les autres utilisateurs peuvent voter (modification_votes).
+
+- Si la proposition reçoit au moins 3 votes accept, elle est validée et appliquée dans relationships.
+
+- Si elle reçoit 3 votes reject, elle est définitivement rejetée.

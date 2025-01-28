@@ -20,11 +20,11 @@ Chaque utilisateur enregistré possède un compte et peut être lié à une pers
 
 | Colonne      | Type           | Description |
 |-------------|---------------|-------------|
-| `id`        | BIGINT (PK)    | Identifiant unique de l'utilisateur |
+| `id`        | INT (PK)    | Identifiant unique de l'utilisateur |
 | `username`  | VARCHAR(255)   | Nom d'utilisateur (unique) |
 | `email`     | VARCHAR(255)   | Adresse e-mail (unique) |
 | `password`  | VARCHAR(255)   | Mot de passe de l'utilisateur |
-| `person_id` | BIGINT (FK)    | Référence vers la table `people` |
+| `person_id` | INT (FK)    | Référence vers la table `people` |
 
 ---
 
@@ -33,11 +33,11 @@ Table contenant les informations des individus enregistrés dans l'arbre généa
 
 | Colonne       | Type           | Description |
 |--------------|---------------|-------------|
-| `id`         | BIGINT (PK)    | Identifiant unique de la personne |
+| `id`         | INT (PK)    | Identifiant unique de la personne |
 | `first_name` | VARCHAR(255)   | Prénom |
 | `last_name`  | VARCHAR(255)   | Nom de famille |
 | `birth_date` | DATE           | Date de naissance |
-| `created_by` | BIGINT (FK)    | Créateur de la fiche |
+| `created_by` | INT (FK)    | Créateur de la fiche |
 
 ---
 
@@ -46,9 +46,9 @@ Définit les relations entre les membres de la famille (parent-enfant, frères e
 
 | Colonne       | Type           | Description |
 |--------------|---------------|-------------|
-| `id`         | BIGINT (PK)    | Identifiant unique de la relation |
-| `parent_id`  | BIGINT (FK)    | Référence vers la personne parent |
-| `child_id`   | BIGINT (FK)    | Référence vers la personne enfant |
+| `id`         | INT (PK)    | Identifiant unique de la relation |
+| `parent_id`  | INT (FK)    | Référence vers la personne parent |
+| `child_id`   | INT (FK)    | Référence vers la personne enfant |
 | `relation_type` | ENUM(father, mother, child, sibling) | Type de relation |
 
 ---
@@ -58,12 +58,12 @@ Permet aux utilisateurs d'inviter des membres de leur famille à rejoindre le si
 
 | Colonne       | Type           | Description |
 |--------------|---------------|-------------|
-| `id`         | BIGINT (PK)    | Identifiant unique de l'invitation |
-| `inviter_id` | BIGINT (FK)    | Identifiant de l'utilisateur invitant |
+| `id`         | INT (PK)    | Identifiant unique de l'invitation |
+| `inviter_id` | INT (FK)    | Identifiant de l'utilisateur invitant |
 | `invitee_email` | VARCHAR(255) | E-mail de l'invité |
-| `person_id`  | BIGINT (FK)    | Référence vers la fiche `people` créée pour l'invité |
+| `person_id`  | INT (FK)    | Référence vers la fiche `people` créée pour l'invité |
 | `status`     | ENUM(pending, accepted, declined) | Statut de l'invitation |
-| `created_at` | TIMESTAMP      | Date de création |
+| `created_at` | DATETIME      | Date de création |
 
 ---
 
@@ -72,9 +72,9 @@ Gère les propositions de modification des informations ou des relations, néces
 
 | Colonne       | Type           | Description |
 |--------------|---------------|-------------|
-| `id`         | BIGINT (PK)    | Identifiant unique de la modification |
-| `proposer_id` | BIGINT (FK)   | Identifiant de l'utilisateur proposant la modification |
-| `target_person_id` | BIGINT (FK) | Personne concernée par la modification |
+| `id`         | INT (PK)    | Identifiant unique de la modification |
+| `proposer_id` | INT (FK)   | Identifiant de l'utilisateur proposant la modification |
+| `target_person_id` | INT (FK) | Personne concernée par la modification |
 | `proposed_changes` | JSON       | Modifications proposées (ex : ajout d'une relation) |
 | `status`     | ENUM(pending, accepted, rejected) | État de la modification |
 | `created_at` | TIMESTAMP      | Date de soumission |
@@ -86,11 +86,11 @@ Stocke les votes des utilisateurs pour accepter ou refuser une modification.
 
 | Colonne       | Type           | Description |
 |--------------|---------------|-------------|
-| `id`         | BIGINT (PK)    | Identifiant unique du vote |
-| `modification_id` | BIGINT (FK) | Référence vers la modification votée |
-| `voter_id`   | BIGINT (FK)    | Identifiant de l'utilisateur votant |
+| `id`         | INT (PK)    | Identifiant unique du vote |
+| `modification_id` | INT (FK) | Référence vers la modification votée |
+| `voter_id`   | INT (FK)    | Identifiant de l'utilisateur votant |
 | `vote`       | ENUM(accept, reject) | Vote (acceptation ou rejet) |
-| `created_at` | TIMESTAMP      | Date du vote |
+| `created_at` | DATETIME      | Date du vote |
 
 ---
 
